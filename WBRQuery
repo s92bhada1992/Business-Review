@@ -1,0 +1,554 @@
+-- Only Serious complaints CTE 
+With Serious_complaints as
+         (Select Case country
+                     When 'NO' then 'Norway'
+                     When 'AO' then 'Australia'
+                     When 'AT' then 'Germany'
+                     When 'BE' then 'Netherlands'
+                     When 'GQ' then 'Netherlands'
+                     When 'SE' then 'Sweden'
+                     When 'CH' then 'Switzerland'
+                     When 'YE' then 'Australia'
+                     When 'CA' then 'Canada'
+                     When 'GB' then 'UK'
+                     When 'LU' then 'Netherlands'
+                     When 'FR' then 'Netherlands'
+                     When 'AU' then 'Australia'
+                     When 'DK' then 'Sweden'
+                     When 'NL' then 'Netherlands'
+                     When 'IT' then 'Italy'
+                     When 'NZ' then 'NewZealands'
+                     When 'DE' then 'Germany'
+                     When 'CK' then 'Canada'
+                     When 'IE' then 'Ireland'
+                     When 'ES' then 'Spain'
+                     When 'CF' then 'Canada'
+                     When 'GN' then 'UK'
+                     else country end                 as country,
+                 hellofresh_week_where_error_happened as Hellofresh_week,
+                 CASE dc
+                     WHEN 'AB' THEN 'Edmonton'
+                     WHEN 'AT' THEN 'Verden'
+                     WHEN 'BC' THEN 'Vancouver'
+                     WHEN 'BL' THEN 'Bleiswijk'
+                     WHEN 'BV' THEN 'Nuneaton'
+                     WHEN 'BV ' THEN 'Nuneaton'
+                     WHEN 'CH' THEN 'Koelliken'
+                     WHEN 'DE' THEN 'Verden'
+                     WHEN 'FR' THEN 'Bleiswijk'
+                     WHEN 'GR' THEN 'Banbury'
+                     WHEN 'IT' THEN 'Milan'
+                     WHEN 'JP' THEN 'Japan'
+                     WHEN 'ML' THEN 'Melbourne'
+                     WHEN 'MO' THEN 'Oslo'
+                     WHEN 'NL' THEN 'Bleiswijk'
+                     WHEN 'NO' THEN 'Oslo'
+                     WHEN 'NZ' THEN 'Auckland'
+                     WHEN 'NZL' THEN 'Auckland'
+                     WHEN 'ON' THEN 'Ontario'
+                     WHEN 'On' THEN 'Ontario'
+                     WHEN 'PH' THEN 'Perth'
+                     WHEN 'SE' THEN 'Cloudberry'
+                     WHEN 'SK' THEN 'Cloudberry'
+                     WHEN 'SW' THEN 'Cloudberry'
+                     WHEN 'SY' THEN 'Sydney'
+                     WHEN 'VE' THEN 'Verden'
+                     WHEN 'WF' THEN 'Co-Packer'
+                     when 'TO' then 'Derby'
+                     WHEN 'unmapped' THEN 'unassigned'
+                     ELSE dc
+                     END                              as Distribution_Center,
+                 count(distinct complaint_item_id)    As Serious_Compalints
+          from materialized_views.cc_errors_processed
+          where mapped_complaint in ('Foreign Object Found', 'Pest Contamination')
+            and mapped_detail_1 in ('Glass', 'Metal', 'Hard Plastic', 'Roach', 'Rodent', 'Other')
+            and error_on <> 'Ingredient'
+            and ingredient <> 'meal-kit'
+            and country NOT IN ('US', 'ER', 'CG', 'FJ', 'MR')
+            and hellofresh_week_where_error_happened >= '2022-W01'
+          group by 1, 2, 3),
+-- Only expired Unit CTE
+
+     Expired_unit as
+         (Select Case country
+                     When 'NO' then 'Norway'
+                     When 'AO' then 'Australia'
+                     When 'AT' then 'Germany'
+                     When 'BE' then 'Netherlands'
+                     When 'GQ' then 'Netherlands'
+                     When 'SE' then 'Sweden'
+                     When 'CH' then 'Switzerland'
+                     When 'YE' then 'Australia'
+                     When 'CA' then 'Canada'
+                     When 'GB' then 'UK'
+                     When 'LU' then 'Netherlands'
+                     When 'FR' then 'Netherlands'
+                     When 'AU' then 'Australia'
+                     When 'DK' then 'Sweden'
+                     When 'NL' then 'Netherlands'
+                     When 'IT' then 'Italy'
+                     When 'NZ' then 'NewZealands'
+                     When 'DE' then 'Germany'
+                     When 'CK' then 'Canada'
+                     When 'IE' then 'Ireland'
+                     When 'ES' then 'Spain'
+                     When 'CF' then 'Canada'
+                     When 'GN' then 'UK'
+                     else country end                 as country,
+                 hellofresh_week_where_error_happened as Hellofresh_week,
+                 CASE dc
+                     WHEN 'AB' THEN 'Edmonton'
+                     WHEN 'AT' THEN 'Verden'
+                     WHEN 'BC' THEN 'Vancouver'
+                     WHEN 'BL' THEN 'Bleiswijk'
+                     WHEN 'BV' THEN 'Nuneaton'
+                     WHEN 'BV ' THEN 'Nuneaton'
+                     WHEN 'CH' THEN 'Koelliken'
+                     WHEN 'DE' THEN 'Verden'
+                     WHEN 'FR' THEN 'Bleiswijk'
+                     WHEN 'GR' THEN 'Banbury'
+                     WHEN 'IT' THEN 'Milan'
+                     WHEN 'JP' THEN 'Japan'
+                     WHEN 'ML' THEN 'Melbourne'
+                     WHEN 'MO' THEN 'Oslo'
+                     WHEN 'NL' THEN 'Bleiswijk'
+                     WHEN 'NO' THEN 'Oslo'
+                     WHEN 'NZ' THEN 'Auckland'
+                     WHEN 'NZL' THEN 'Auckland'
+                     WHEN 'ON' THEN 'Ontario'
+                     WHEN 'On' THEN 'Ontario'
+                     WHEN 'PH' THEN 'Perth'
+                     WHEN 'SE' THEN 'Cloudberry'
+                     WHEN 'SK' THEN 'Cloudberry'
+                     WHEN 'SW' THEN 'Cloudberry'
+                     WHEN 'SY' THEN 'Sydney'
+                     WHEN 'VE' THEN 'Verden'
+                     WHEN 'WF' THEN 'Co-Packer'
+                     when 'TO' then 'Derby'
+                     WHEN 'unmapped' THEN 'unassigned'
+                     ELSE dc
+                     END                              as Distribution_Center,
+                 count(distinct complaint_item_id)    as Expired_Unit_Shipped
+          from materialized_views.cc_errors_processed
+          where mapped_complaint = 'Expiration Date Passed'
+            and country NOT IN ('US', 'ER', 'CG', 'FJ', 'MR')
+            and hellofresh_week_where_error_happened >= '2022-W01'
+          Group by 1, 2, 3),
+-- Only warm complaints CTE
+    
+Warm_complaints
+         as (Select CASE country
+                        WHEN 'ES' THEN 'Spain'
+                        WHEN 'GB' THEN 'UK'
+                        WHEN 'CA' THEN 'Canada'
+                        WHEN 'NL' THEN 'Netherlands'
+                        WHEN 'NZ' THEN 'NewZealand'
+                        WHEN 'DK' THEN 'Sweden'
+                        WHEN 'CH' THEN 'Switzerland'
+                        WHEN 'GN' THEN 'UK'
+                        When 'DE' then 'Germany'
+                        WHEN 'SE' THEN 'Sweden'
+                        When 'BE' then 'Netherlands'
+                        When 'FR' then 'Netherlands'
+                        When 'LU' then 'Netherlands'
+                        When 'GQ' then 'Netherlands'
+                        WHEN 'IE' THEN 'Ireland'
+                        WHEN 'CK' THEN 'Canada'
+                        When 'CA' then 'Canada'
+                        When 'AO' then 'Australia'
+                        When 'AU' then 'Australia'
+                        When 'IT' then 'Italy'
+                        WHEN 'CF' THEN 'Canada'
+                        WHEN 'NO' THEN 'Norway'
+                        WHEN 'YE' THEN 'Australia'
+                        WHEN 'AT' THEN 'Germany'
+                        ELSE country
+                        END           as country,
+                    CASE distribution_center
+                        WHEN 'NZ' THEN 'Auckland'
+                        WHEN 'GR' THEN 'Banbury'
+                        WHEN 'Barleben' THEN 'Barleben'
+                        WHEN 'SK' THEN 'Cloudberry'
+                        WHEN 'BL' THEN 'Bleiswijk'
+                        WHEN 'CH' THEN 'Koelliken'
+                        WHEN 'Madrid' THEN 'Madrid'
+                        WHEN 'BC' THEN 'Vancouver'
+                        WHEN 'ON' THEN 'Ontario'
+                        When 'TO' then 'Derby'
+                        When 'BV' then 'Nuneaton'
+                        when 'unmapped' then 'Unassigned'
+                        When 'MO' then 'Oslo'
+                        When 'VE' then 'Verden'
+                        when 'AB' then 'Edmonton'
+                        ELSE distribution_center
+                        end           as distribution_center,
+                    hellofresh_week,
+                    sum(total_errors) as total_warm_errors
+             from views_analysts.warm_related_relative_errors
+             Group by 1, 2, 3),
+-- All Food safety reelated complaints combined together as new CTE
+     All_Serious_complaints as
+         (Select W.country,
+                 W.Hellofresh_week,
+                 W.Distribution_Center,
+                 COALESCE(SC.Serious_Compalints, 0) as SC_DWH,
+                 W.total_warm_errors
+          from Warm_complaints W
+                   full Join Serious_complaints Sc on W.country = Sc.country
+              and W.Hellofresh_week = Sc.Hellofresh_week
+              and W.Distribution_Center = Sc.Distribution_center
+          Order by W.Distribution_Center
+         ),
+--Date Dimension 
+     Date_Dimension as (Select t.date_string_backwards,
+                               t.hellofresh_month,
+                               t.hellofresh_week as hf_week,
+                               t.hellofresh_running_week,
+                               t.hellofresh_quarter,
+                               t.hellofresh_running_month
+                        From dimensions.date_dimension t
+                        where t.year between 2022 and 2023),
+
+-- Boxes Produced
+     Global_Boxes as (SELECT ef.hf_week                                             as Hellofresh_week,
+                             Case ef.DC
+                                 when 'CAN BC' then 'Vancouver'
+                                 when 'AUS PER' then 'Perth'
+                                 when 'AUS MEL' then 'Melbourne'
+                                 when 'NZL' then 'Auckland'
+                                 when 'SW' then 'Bjuv'
+                                 when 'CAN ON (T+S)' then 'Ontario'
+                                 when 'IT' then 'Milan'
+                                 when 'NO' then 'Oslo'
+                                 when 'NL KP' then 'Bleiswijk'
+                                 when 'NL' then 'Bleiswijk'
+                                 when 'AUS SYD' then 'Sydney'
+                                 when 'CAN AB' then 'Edmonton'
+                                 else ef.dc end                                     as Distribution_Center,
+                             Sum(ef.value_add_min_box),
+                             sum(ef.none_value_add_min_box),
+                             sum(ef.Value_add_hrs),
+                             Sum(ef.none_value_add_hrs),
+                             Sum(ef.Value_add_hrs) * 60 / sum(ef.value_add_min_box) as Box_Produced
+
+                      FROM uploads.isa_global_efficiency ef
+                      where hf_week >= '2022-W01'
+                        and ef.DC NOT IN ('US East', 'US West', 'US Texas', 'BC')
+                      group by ef.DC,
+                               hf_week),
+     Box_GLOBAL as (Select Distribution_Center,
+                           Hellofresh_week,
+                           sum(Box_Produced) as Box_Produced
+                    from Global_Boxes
+                    group by 1, 2),
+
+-- Boxes shipped
+
+     Box_P as (SELECT hellofresh_week,
+                      case Mapped_dc
+                          when 'Bjuv' then 'Cloudberry'
+                          when 'Toronto' then 'Ontario'
+                          else Mapped_dc end       as Distribution_Center,
+                      count(distinct box_id)       as Box_shipped,
+                      count(distinct split_box_id) as split_Box
+               from materialized_views.box_production_dimensions t
+               where mapped_dc <> 'unknown'
+               group by hellofresh_week,
+                        mapped_dc),
+     Box_Prod as (select hellofresh_week,
+                         Distribution_Center
+
+                  from Box_P
+                  group by 1, 2),
+-- Error rate 
+
+     ERR_Box as (Select hellofresh_week,
+                        case dc_name
+                            when 'Bjuv' then 'Cloudberry'
+                            else dc_name end                      as Distribution_Center,
+                        sum(case
+                                when metric_name = 'Rolled Box Error Rate'
+                                    then (nominator_value) end)   as Rolled_Box_Error,
+                        sum(case
+                                when metric_name = 'Production - P&P Error Rate'
+                                    then (nominator_value) end)   as Production_Error,
+                        sum(case
+                                when metric_name = 'Others P&P Error Rate'
+                                    then (nominator_value) end)   as Others_Error,
+                        sum(case
+                                when metric_name = 'Kitting Error Rate'
+                                    then (nominator_value) end)   as Kitting_Error,
+                        sum(case
+                                when metric_name = 'ASL Recipe Card Error Rate'
+                                    then (nominator_value) end)   as Recipe_Card,
+                        sum(case
+                                when metric_name = 'ASL Mealkit Error Rate'
+                                    then (nominator_value) end)   as ASL_Mealkit,
+                        sum(case
+                                when metric_name = 'ASL Error Rate'
+                                    then (nominator_value) end)   as ASL_Error,
+                        sum(Case
+                                when metric_name = 'ASL Ingredient Error Rate'
+                                    then (nominator_value) end)   as ASL_Ingredient_Error,
+                        sum(case
+                                when metric_name = 'Rolled Box Error Rate'
+                                    then (denominator_value) end) as Rolled_Box_Error_Box,
+                        sum(case
+                                when metric_name = 'Production - P&P Error Rate'
+                                    then (denominator_value) end) as Production_Error_Box,
+                        sum(case
+                                when metric_name = 'Others P&P Error Rate'
+                                    then (denominator_value) end) as Others_Error_Box,
+                        sum(case
+                                when metric_name = 'Kitting Error Rate'
+                                    then (denominator_value) end) as Kitting_Error_Box,
+                        sum(case
+                                when metric_name = 'ASL Recipe Card Error Rate'
+                                    then (denominator_value) end) as Recipe_Card_Box,
+                        sum(case
+                                when metric_name = 'ASL Mealkit Error Rate'
+                                    then (denominator_value) end) as ASL_Mealkit_Box,
+                        sum(case
+                                when metric_name = 'ASL Error Rate'
+                                    then (denominator_value) end) as ASL_Box,
+                        sum(Case
+                                when metric_name = 'ASL Ingredient Error Rate'
+                                    then (denominator_value) end) as ASL_Ingredient_Box
+                 from materialized_views.isa__br_production_errors_metric
+                 group by 1, 2),
+--  Error rate 
+
+     Error_data as (Select hellofresh_week,
+                           Distribution_Center,
+                           Sum(Production_Error) / sum(Production_Error_Box)   as Production_Error_rate,
+                           Sum(Rolled_Box_Error) / sum(Rolled_Box_Error_Box)   as Rolled_Box_Error_Rate,
+                           Sum(Others_Error) / sum(Others_Error_Box)           as Others_Error_Rate,
+                           Sum(Kitting_Error) / sum(Kitting_Error_Box)         as Kitting_Error_Rate,
+                           Sum(Recipe_Card) / sum(Recipe_Card_Box)             as Recipe_Card_Error,
+                           Sum(ASL_Mealkit) / sum(ASL_Mealkit_Box)             as ASL_Mealkit_Error,
+                           Sum(ASL_Error) / sum(ASL_Box)                       as ASL_Error,
+                           Sum(ASL_Ingredient_Error) / sum(ASL_Ingredient_Box) as ASL_Ingredient_Error
+                    from ERR_Box
+                    group by 1, 2),
+-- Warehouse Error data
+     WH_Error as (Select Case country
+                             When 'NO' then 'Norway'
+                             When 'AO' then 'Australia'
+                             When 'AT' then 'Germany'
+                             When 'BE' then 'Netherlands'
+                             When 'GQ' then 'Netherlands'
+                             When 'SE' then 'Sweden'
+                             When 'CH' then 'Switzerland'
+                             When 'YE' then 'Australia'
+                             When 'CA' then 'Canada'
+                             When 'GB' then 'UK'
+                             When 'LU' then 'Netherlands'
+                             When 'FR' then 'Netherlands'
+                             When 'AU' then 'Australia'
+                             When 'DK' then 'Sweden'
+                             When 'NL' then 'Netherlands'
+                             When 'IT' then 'Italy'
+                             When 'NZ' then 'NewZealands'
+                             When 'DE' then 'Germany'
+                             When 'CK' then 'Canada'
+                             When 'IE' then 'Ireland'
+                             When 'ES' then 'Spain'
+                             When 'CF' then 'Canada'
+                             When 'GN' then 'UK'
+                             else country end                 as country,
+                         hellofresh_week_where_error_happened as Hellofresh_week,
+                         CASE dc
+                             WHEN 'AB' THEN 'Edmonton'
+                             WHEN 'AT' THEN 'Verden'
+                             WHEN 'BC' THEN 'Vancouver'
+                             WHEN 'BL' THEN 'Bleiswijk'
+                             WHEN 'BV' THEN 'Nuneaton'
+                             WHEN 'BV ' THEN 'Nuneaton'
+                             WHEN 'CH' THEN 'Koelliken'
+                             WHEN 'DE' THEN 'Verden'
+                             WHEN 'FR' THEN 'Bleiswijk'
+                             WHEN 'GR' THEN 'Banbury'
+                             WHEN 'IT' THEN 'Milan'
+                             WHEN 'JP' THEN 'Japan'
+                             WHEN 'ML' THEN 'Melbourne'
+                             WHEN 'MO' THEN 'Oslo'
+                             WHEN 'NL' THEN 'Bleiswijk'
+                             WHEN 'NO' THEN 'Oslo'
+                             WHEN 'NZ' THEN 'Auckland'
+                             WHEN 'NZL' THEN 'Auckland'
+                             WHEN 'ON' THEN 'Ontario'
+                             WHEN 'On' THEN 'Ontario'
+                             WHEN 'PH' THEN 'Perth'
+                             WHEN 'SE' THEN 'Cloudberry'
+                             WHEN 'SK' THEN 'Cloudberry'
+                             WHEN 'SW' THEN 'Cloudberry'
+                             WHEN 'SY' THEN 'Sydney'
+                             WHEN 'VE' THEN 'Verden'
+                             WHEN 'WF' THEN 'Co-Packer'
+                             when 'TO' then 'Derby'
+                             WHEN 'unmapped' THEN 'unassigned'
+                             ELSE dc
+                             END                              as Distribution_Center,
+                         count(distinct complaint_item_id)    as Production_errors
+                  from materialized_views.cc_errors_processed
+                  where mapped_detailed_accountable_team in ('Production - Warehousing')
+                    and country NOT IN ('US', 'ER', 'CG', 'FJ', 'MR')
+                    and error_reported_through <> 'bulk_upload'
+                    AND compensation_amount_local <> 0
+                    AND compensation_amount_eur <> 0
+                    and mapped_complaint <> 'Production Issue'
+                    and dc <> 'unassigned'
+                    and hellofresh_week_where_error_happened >= '2022-W01'
+                  Group by 1, 2, 3),
+     Box as (Select hellofresh_week,
+                    Case dc
+                        When 'AB' then 'Edmonton'
+                        when 'BC' then 'Vancouver'
+                        when 'Chilli Bin' then 'Auckland'
+                        when 'NZ' then 'Auckland'
+                        when 'ON' then 'Ontario'
+                        When 'BL' then 'Bleiswijk'
+                        When 'FR' then 'Bleiswijk'
+                        When 'SK' then 'Cloudberry'
+                        When 'Esky' then 'Sydney'
+                        When 'TO' then 'Derby'
+                        When 'BV' then 'Nuneaton'
+                        when 'CH' then 'Koelliken'
+                        when 'Casa' then 'Perth'
+                        When 'VE' then 'Verden'
+                        When 'GR' then 'Banbury'
+                        When 'MO' then 'Oslo'
+                        else dc end    as Distribution_Center,
+                    sum(val_box_count) as Box_shipped
+             from materialized_views.isa_box_count
+             where country not in ('US', 'ER', 'MR', 'CG', 'FJ', 'ML')
+               and hellofresh_week >= '2022-W01'
+               and dc not in ('unassigned')
+             Group by 1, 2),
+     WH_ERR as (select ER.country,
+                       ER.Hellofresh_week,
+                       ER.Distribution_Center,
+                       sum(Er.Production_errors)                      as ab_Warehouseh_errors,
+                       sum(B.Box_shipped)                             as boxes,
+                       sum(Er.Production_errors) / sum(B.Box_shipped) as Warehouse_errors
+                from WH_Error ER
+                         join Box B on ER.Hellofresh_week = B.hellofresh_week
+                    and ER.Distribution_Center = B.Distribution_Center
+                where ER.Hellofresh_week >= '2022-W01'
+                Group by 1, 2, 3),
+     -- Inventory
+     Inventory as (SELECT case dc
+           when 'nz' then 'Auckland'
+           when 'to' then 'Derby'
+           when 'bx' then 'Barleben'
+           when 'sh' then 'Bleiswijk'
+           when 've' then 'Verden'
+           when 'sy' then 'Sydney'
+           when 'gr' then 'Banbury'
+           when 'ml' then 'Melbourne'
+           when 'ph' then 'Perth'
+           when 'li' then 'Lisses'
+           when 'bv' then 'Nuneaton'
+           else dc end as                        distribution_center,
+       hellofresh_week,
+       SUM(accurate_stock_quantity)              accurate_stock_quantity,
+       SUM(audit_performed_on_storage_locations) audit_performed_on_storage_locations,
+       CASE
+           WHEN SUM(audit_performed_on_storage_locations) = 0 THEN 0
+           ELSE SUM(accurate_stock_quantity) / SUM(audit_performed_on_storage_locations)
+           END         AS                        stock_accuracy
+FROM materialized_views.warehousing_inventory_accuracy
+GROUP BY dc,
+         hellofresh_week),
+     --Waste KPI
+     Waste_Raw as
+         (select country_group,
+                 hellofresh_week,
+                 dc,
+                 dc_name,
+                 metric_name,
+                 case
+                     when min(metric_type) = 'proportional'
+                         then round(sum(nominator_value) / sum(denominator_value), 4)
+                     else sum(nominator_value)
+                     end as metric_value,
+                 case
+                     when min(metric_type) = 'proportional'
+                         then round(sum(target * denominator_value) / sum(denominator_value), 4)
+                     else sum(target)
+                     end as target_value
+          From materialized_views.isa__br_physical_waste_metric
+          where hellofresh_week >= '2022-W01'
+          group by 1, 2, 3, 4, 5),
+
+     Waste_Main as (Select hellofresh_week,
+                           Case dc_name
+                               when 'Bjuv' then 'Cloudberry'
+                               when 'Toranto' then 'Ontario'
+                               else dc_name end                 as distribution_center,
+                           dc,
+                           sum(case
+                                   when metric_name = 'physical_waste_cpb'
+                                       then (metric_value) end) as Physical_waste,
+                           sum(case
+                                   when metric_name = 'physical_waste_cpb'
+                                       then (target_value) end) as Physical_Waste_Target,
+                           sum(case
+                                   when metric_name = 'donations_rate'
+                                       then (metric_value) end) as Donation_Rate,
+                           sum(case
+                                   when metric_name = 'donations_rate'
+                                       then (target_value) end) as Donataion_rate_Target
+
+
+                    from Waste_Raw
+                    group by 1, 2, 3)
+
+Select dd.*,
+       W.SC_DWH,
+       W.total_warm_errors,
+       COALESCE(EX.Expired_Unit_Shipped, 0)            as expired_Unit_shipped,
+       BP.hellofresh_week,
+       BPM.Box_Produced,
+       BP.Distribution_Center,
+       ERR.Rolled_Box_Error_Rate,
+       ERR.Production_Error_rate,
+       ERR.Others_Error_Rate,
+       ERR.Kitting_Error_Rate,
+       ERR.Recipe_Card_Error,
+       ERR.ASL_Mealkit_Error,
+       ERR.ASL_Error,
+       ERR.ASL_Ingredient_Error,
+       WE.ab_Warehouseh_errors,
+       WE.boxes,
+       WE.Warehouse_errors,
+       WE.Warehouse_errors + ERR.Production_Error_rate as Total_Production_Errors,
+       wt.Physical_waste,
+       wt.Physical_Waste_Target,
+       wt.Donation_Rate,
+       wt.Donataion_rate_Target,
+       iv.stock_accuracy
+From Box_Prod BP
+         full join Box_GLOBAL BPM on BP.hellofresh_week = BPM.Hellofresh_week
+    and BP.Distribution_Center = BPM.Distribution_Center
+         full join Expired_unit EX
+                   on BP.hellofresh_week = EX.Hellofresh_week
+                       and BP.Distribution_Center = EX.Distribution_center
+         full join Date_Dimension dd
+                   on BP.hellofresh_week = dd.hf_week
+         full join All_Serious_complaints W on BP.hellofresh_week = W.Hellofresh_week
+    and BP.Distribution_Center = W.Distribution_Center
+         full join Error_data ERR on BP.hellofresh_week = ERR.hellofresh_week
+    and BP.Distribution_Center = ERR.Distribution_Center
+         full join WH_ERR WE on
+            BP.Distribution_Center = WE.Distribution_Center
+        and BP.hellofresh_week = WE.Hellofresh_week
+         full join Waste_Main Wt on
+            BP.Distribution_Center = Wt.Distribution_Center
+        and BP.hellofresh_week = Wt.Hellofresh_week
+full join Inventory iv on
+            BP.Distribution_Center = iv.Distribution_Center
+        and BP.hellofresh_week = iv.hellofresh_week
+
+
+
